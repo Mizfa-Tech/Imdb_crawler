@@ -15,6 +15,7 @@ class ImdbSpider(scrapy.Spider):
         creator = response.xpath('//*[@id="__next"]/main/div/section[1]/section/div[3]/section/section/div[3]/div[2]/div[1]/div[3]/ul/li[1]/div/ul/li/a/text()').get()
         country_of_origin = response.css('section[data-testid="Details"] li[data-testid="title-details-origin"] a::text').get()
         casts = response.css('section[data-testid="title-cast"] div[data-testid="shoveler"] div[data-testid="shoveler-items-container"] div[data-testid="title-cast-item"] a::text').getall()
+        casts_charcter = response.css('a[data-testid="cast-item-characters-link"] span::text').getall()
         # casts = response.css('a.sc-bfec09a1-1::text').getall()
         language = response.css('section[data-testid="Details"] li[data-testid="title-details-languages"] a::text').get()
         run_time = response.css('section[data-testid="TechSpecs"] li[data-testid="title-techspec_runtime"] div::text').getall()
@@ -23,7 +24,7 @@ class ImdbSpider(scrapy.Spider):
         
         
         yield {
-            'title':title,"language":language,'casts':casts,'release_date':release_date,
+            'title':title,"language":language,'casts':casts, 'casts_character':casts_charcter, 'release_date':release_date,
             'cover_url':cover_url,'genres':genres,'description':description,'creator':creator,
             'country_of_origin':country_of_origin,"run_time":run_time,'rate':rate
             }
