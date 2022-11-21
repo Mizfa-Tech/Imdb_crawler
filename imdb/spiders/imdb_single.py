@@ -16,11 +16,13 @@ class ImdbSpider(scrapy.Spider):
         country_of_origin = response.xpath('//*[@id="__next"]/main/div/section[1]/div/section/div/div[1]/section[12]/div[2]/ul/li[2]/div/ul/li/a/text()').get()
         casts = response.css('a.sc-bfec09a1-1::text').getall()
         language = response.xpath('//*[@id="__next"]/main/div/section[1]/div/section/div/div[1]/section[12]/div[2]/ul/li[4]/div/ul/li/a/text()').get()
+        story__line = response.xpath('//*[@id="__next"]/main/div/section[1]/div/section/div/div[1]/section[7]/div[2]/div[1]/div/div/text()').get()
+        
         
         yield {
             'title':title,"language":language,'casts':casts,'release_date':release_date,
             'cover_url':cover_url,'genres':genres,'description':description,'creator':creator,
-            'country_of_origin':country_of_origin
+            'country_of_origin':country_of_origin,'story__line':story__line
             }
         
         
