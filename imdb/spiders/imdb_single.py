@@ -8,6 +8,8 @@ class ImdbSpider(scrapy.Spider):
     name = 'imdb'
     start_urls = [
         'https://www.imdb.com/title/tt0068646',
+        'https://www.imdb.com/title/tt0468569',
+        'https://www.imdb.com/title/tt9288822'
     ]
     
     def parse(self, response, **kwargs):
@@ -71,8 +73,10 @@ class ImdbSpider(scrapy.Spider):
         
         fanal_casts = dict(zip(casts,casts_charcter))
         loader.add_value('casts',fanal_casts)
-       
         
+        loader.add_xpath('stars','//*[@id="__next"]/main/div/section[1]/section/div[3]/section/section/div[3]/div[2]/div[1]/div[3]/ul/li[3]/div/ul/li/a/text()')
+
+
         # yield {
         #     'imdb_id':imdb_id,'title':title,"language":language,'casts':fanal_casts,'release_date':release_date,
         #     'cover_url':cover_url,'genres':genres,'description':description,'writers':writers,'director':director,

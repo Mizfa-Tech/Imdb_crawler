@@ -25,4 +25,5 @@ class ImdbItem(scrapy.Item):
     run_time = scrapy.Field(input_processor=processors.Compose(run_time),output_processor=processors.TakeFirst())
     rate = scrapy.Field(output_processor=processors.TakeFirst())
     rete_population = scrapy.Field(output_processor=processors.TakeFirst())
-    casts = scrapy.Field(output_processor=processors.Identity())
+    casts = scrapy.Field(output_processor=processors.TakeFirst())
+    stars = scrapy.Field(output_processor=processors.Identity())
