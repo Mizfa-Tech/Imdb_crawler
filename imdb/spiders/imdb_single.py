@@ -9,7 +9,10 @@ class ImdbSpider(scrapy.Spider):
     start_urls = [
         'https://www.imdb.com/title/tt0068646',
         'https://www.imdb.com/title/tt0468569',
-        'https://www.imdb.com/title/tt9288822'
+        'https://www.imdb.com/title/tt9288822',
+        'https://www.imdb.com/title/tt0292506',
+        'https://www.imdb.com/title/tt0159273',
+        'https://www.imdb.com/title/tt0314353',
     ]
     
     def parse(self, response, **kwargs):
