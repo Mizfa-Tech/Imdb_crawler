@@ -6,49 +6,68 @@
 
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
-from clickhouse_driver import Client
+from cassandra.cluster import Cluster
+from cassandra.query import BatchStatement, SimpleStatement
 
 
 class ImdbPipeline:
     def __init__(self):
-        self.db = Client(host='localhost', port=19000)
-        self.create_database()
+        cluster = Cluster(['localhost'], port=9042)
+        self.session = cluster.connect()
+        self.create_keyspace()
         self.create_table()
-        
-    def create_database(self):
-        self.db.execute(
-        "CREATE DATABASE IF NOT EXISTS imdb;"
+        self.batch = BatchStatement()
+
+    def create_keyspace(self):
+        self.session.execute(
+            "CREATE KEYSPACE IF NOT EXISTS imdb_crawler WITH replication = {'class': 'SimpleStrategy', 'replication_factor' : 1};"
         )
-        
+        self.session.execute(
+            "USE imdb_crawler "
+        )
+
     def create_table(self):
-        self.db.execute(
-            """
-            CREATE TABLE IF NOT EXISTS imdb.information(
-                imdb_id String,
-                title String,
-                release_date String,
-                cover_url String,
-                genres Array(String),
-                description String,
-                director Array(String),
-                writers Array(String),
-                country_of_origin String,
-                language Array(String),
-                run_time String,
-                rate String,
-                rete_population String,
-                casts Map(String,String),
-                stars Array(String),
-            )ENGINE=MergeTree() PRIMARY KEY(imdb_id) SETTINGS insex_grabularity=8192;
-            """
-        
-            
+        self.session.execute(
+            """CREATE TABLE IF NOT EXISTS imdb(
+                imdb_id text PRIMARY KEY,
+                title text,
+                release_date text,
+                cover_url text,
+                genres list<text>,
+                description text,
+                director list<text>,
+                writers list<text>,
+                country_of_origin text,
+                language list<text>,
+                run_time text,
+                rate text,
+                rete_population text,
+                casts map<text, text>,
+                stars list<text>,
+                film_location list<text>,
+                budget text,
+                color text,
+                sound_mix list<text>,
+                aspect_ratio text,
+                production_companies list<text>,
+                oscars text,
+                awards text
+                );"""
         )
-    
+
     def process_item(self, item, spider):
-        self.db.execute(
-            """INSERT INTO imdb.information values""",
-            [(item['imdb_id'],
+        batch = self.batch.add(
+            SimpleStatement("""INSERT INTO imdb(
+            imdb_id,title,release_date,cover_url,genres,
+            description,director,writers,country_of_origin,language,
+            run_time,rate,rete_population,casts,stars,film_location,budget,
+            color,sound_mix,aspect_ratio,production_companies,oscars,awards            
+            ) values (
+            %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
+            %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
+            %s,%s,%s)"""),
+            (
+                item['imdb_id'],
                 item['title'],
                 item['release_date'],
                 item['cover_url'],
@@ -60,12 +79,19 @@ class ImdbPipeline:
                 item['language'],
                 item['run_time'],
                 item['rate'],
-                item["rete_population"],
+                item['rete_population'],
                 item['casts'],
                 item['stars'],
-            )]
-        )
-        
-        
+                item['film_location'],
+                item['budget'],
+                item['color'],
+                item['sound_mix'],
+                item['aspect_ratio'],
+                item['production_companies'],
+                item['oscars'],
+                item['awards'],
+            ))
+
+        self.session.execute(batch)
 
         return item

@@ -9,6 +9,11 @@ class ImdbSpider(scrapy.Spider):
     start_urls = [
         'https://www.imdb.com/title/tt0068646',
         'https://www.imdb.com/title/tt0120623/',
+        'https://www.imdb.com/title/tt0092493/',
+        'https://www.imdb.com/title/tt16030542/',
+        'https://www.imdb.com/title/tt16358384/',
+        'https://www.imdb.com/title/tt12762512/'
+
     ]
 
     def parse(self, response, **kwargs):
@@ -39,7 +44,7 @@ class ImdbSpider(scrapy.Spider):
         loader.add_css('language', 'section[data-testid="Details"] li[data-testid="title-details-languages"] a::text')
 
         loader.add_css('run_time',
-                       'section[data-testid="TechSpecs"] li[data-testid="title-techspec_runtime"] div::text')
+                       'li[data-testid="title-techspec_runtime"] div::text')
 
         loader.add_xpath('rate',
                          '//*[@id="__next"]/main/div/section[1]/section/div[3]/section/section/div[2]/div[2]/div/div[1]/a/div/div/div[2]/div[1]/span[1]/text()')
