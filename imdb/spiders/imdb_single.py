@@ -72,9 +72,9 @@ class ImdbSpider(scrapy.Spider):
 
         casts = response.css(
             'section[data-testid="title-cast"] div[data-testid="shoveler"] div[data-testid="shoveler-items-container"] div[data-testid="title-cast-item"] a::text').getall()
-        casts_charcter = response.css('a[data-testid="cast-item-characters-link"] span::text').getall()
+        casts_character = response.css('a[data-testid="cast-item-characters-link"] span::text').getall()
 
-        final_casts = dict(zip(casts, casts_charcter))
+        final_casts = dict(zip(casts, casts_character))
         loader.add_value('casts', final_casts)
 
         loader.add_xpath('stars',
