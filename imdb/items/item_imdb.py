@@ -1,22 +1,6 @@
-import re
 import scrapy
 from itemloaders import processors
-
-
-# ------------------------------------- processors --------------------------------------------------------------------
-def run_time(value: list[str]):
-    return ''.join(value)
-
-
-def validate_data(value):
-    if value:
-        return value
-    return 'NULL'
-
-
-def get_imdb_id(value):
-    result = ''.join(re.findall("(tt\d+)", value))
-    return result
+from imdb.items.processors import get_imdb_id, validate_data, run_time
 
 
 # ------------------------------------------------ Item ________________________________________________________________
@@ -54,9 +38,3 @@ class ImdbItem(scrapy.Item):
                                output_processor=processors.Identity())
     oscars = scrapy.Field(input_processor=processors.Compose(validate_data), output_processor=processors.TakeFirst())
     awards = scrapy.Field(input_processor=processors.Compose(validate_data), output_processor=processors.TakeFirst())
-
-
-class ImdbLinkItem(scrapy.Item):
-    title = scrapy.Field(input_processor=processors.Compose(validate_data), output_processor=processors.TakeFirst())
-    link = scrapy.Field(input_processor=processors.MapCompose(validate_data, get_imdb_id),
-                        output_processor=processors.TakeFirst())

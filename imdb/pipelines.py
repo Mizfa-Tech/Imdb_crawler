@@ -10,7 +10,7 @@ from cassandra.cluster import Cluster
 from cassandra.query import BatchStatement, SimpleStatement
 
 
-class ImdbPipeline:
+class Main:
     def __init__(self):
         cluster = Cluster(['localhost'], port=9042)
         self.session = cluster.connect()
@@ -27,6 +27,13 @@ class ImdbPipeline:
         )
 
     def create_table(self):
+        self.session.execute(
+            """CREATE TABLE IF NOT EXISTS imdb_link(
+                imdb_id text PRIMARY KEY,
+                title text,
+            );"""
+        )
+
         self.session.execute(
             """CREATE TABLE IF NOT EXISTS imdb(
                 imdb_id text PRIMARY KEY,
@@ -55,7 +62,10 @@ class ImdbPipeline:
                 );"""
         )
 
-    def process_item(self, item, spider):
+
+class ImdbPipeline(Main):
+
+    def process_item_imdb(self, item, spider):
         batch = self.batch.add(
             SimpleStatement("""INSERT INTO imdb(
             imdb_id,title,release_date,cover_url,genres,
@@ -95,3 +105,7 @@ class ImdbPipeline:
         self.session.execute(batch)
 
         return item
+
+class ImdbLinkPipeline(Main):
+    def process_item_imdb_link(self, item, spider):
+        pass

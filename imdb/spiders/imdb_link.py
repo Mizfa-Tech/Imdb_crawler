@@ -1,5 +1,5 @@
 import scrapy
-from imdb.items import ImdbLinkItem
+from imdb.items.item_imdb_link import ImdbLinkItem
 from scrapy.loader import ItemLoader
 
 
@@ -14,7 +14,7 @@ class ImdbLinkSpider(scrapy.Spider):
         for item in response.css('span.lister-item-header'):
             loader = ItemLoader(item=ImdbLinkItem(), selector=item)
             loader.add_css('title', 'a::text')
-            loader.add_css('link', 'a::attr(href)')
+            loader.add_css('imdb_id', 'a::attr(href)')
 
             yield loader.load_item()
 

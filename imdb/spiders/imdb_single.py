@@ -1,7 +1,7 @@
 import re
 import scrapy
 from scrapy.loader import ItemLoader
-from imdb.items import ImdbItem
+from imdb.items.item_imdb import ImdbItem
 
 
 class ImdbSpider(scrapy.Spider):
