@@ -1,5 +1,5 @@
 import scrapy
-from imdb.items.item_imdb_link import ImdbLinkItem
+from imdb.items import ImdbLinkItem
 from scrapy.loader import ItemLoader
 
 
@@ -7,7 +7,6 @@ class ImdbLinkSpider(scrapy.Spider):
     name = 'link'
     start_urls = [
         'https://www.imdb.com/search/title/?view=simple&count=250',
-        # 'https://www.imdb.com/search/title/?view=simple'
     ]
 
     def parse(self, response, **kwargs):

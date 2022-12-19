@@ -62,9 +62,10 @@ DOWNLOADER_MIDDLEWARES = {
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-# ITEM_PIPELINES = {
-#    'imdb.pipelines.ImdbPipeline': 300,
-# }
+ITEM_PIPELINES = {
+   'imdb.pipelines.ImdbPipeline': 300,
+   # 'imdb.pipelines.ImdbLinkPipeline': 301,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html

@@ -10,7 +10,7 @@ from cassandra.cluster import Cluster
 from cassandra.query import BatchStatement, SimpleStatement
 
 
-class Main:
+class ImdbPipeline:
     def __init__(self):
         cluster = Cluster(['localhost'], port=9042)
         self.session = cluster.connect()
@@ -28,10 +28,12 @@ class Main:
 
     def create_table(self):
         self.session.execute(
-            """CREATE TABLE IF NOT EXISTS imdb_link(
+            """
+            CREATE TABLE IF NOT EXISTS imdb_link(
                 imdb_id text PRIMARY KEY,
                 title text,
-            );"""
+                );
+            """
         )
 
         self.session.execute(
@@ -62,50 +64,58 @@ class Main:
                 );"""
         )
 
+    def process_item(self, item, spider):
+        if spider.name in ['imdb']:
+            batch = self.batch.add(
+                SimpleStatement("""INSERT INTO imdb(
+                imdb_id,title,release_date,cover_url,genres,
+                description,director,writers,country_of_origin,language,
+                run_time,rate,rete_population,casts,stars,film_location,budget,
+                color,sound_mix,aspect_ratio,production_companies,oscars,awards
+                ) values (
+                %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
+                %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
+                %s,%s,%s)"""),
+                (
+                    item.get('imdb_id'),
+                    item.get('title'),
+                    item.get('release_date'),
+                    item.get('cover_url'),
+                    item.get('genres'),
+                    item.get('description'),
+                    item.get('director'),
+                    item.get('writers'),
+                    item.get('country_of_origin'),
+                    item.get('language'),
+                    item.get('run_time'),
+                    item.get('rate'),
+                    item.get('rete_population'),
+                    item.get('casts'),
+                    item.get('stars'),
+                    item.get('film_location'),
+                    item.get('budget'),
+                    item.get('color'),
+                    item.get('sound_mix'),
+                    item.get('aspect_ratio'),
+                    item.get('production_companies'),
+                    item.get('oscars'),
+                    item.get('awards'),
+                ))
 
-class ImdbPipeline(Main):
+            self.session.execute(batch)
 
-    def process_item_imdb(self, item, spider):
-        batch = self.batch.add(
-            SimpleStatement("""INSERT INTO imdb(
-            imdb_id,title,release_date,cover_url,genres,
-            description,director,writers,country_of_origin,language,
-            run_time,rate,rete_population,casts,stars,film_location,budget,
-            color,sound_mix,aspect_ratio,production_companies,oscars,awards            
-            ) values (
-            %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
-            %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
-            %s,%s,%s)"""),
-            (
-                item['imdb_id'],
-                item['title'],
-                item['release_date'],
-                item['cover_url'],
-                item['genres'],
-                item['description'],
-                item['director'],
-                item['writers'],
-                item['country_of_origin'],
-                item['language'],
-                item['run_time'],
-                item['rate'],
-                item['rete_population'],
-                item['casts'],
-                item['stars'],
-                item['film_location'],
-                item['budget'],
-                item['color'],
-                item['sound_mix'],
-                item['aspect_ratio'],
-                item['production_companies'],
-                item['oscars'],
-                item['awards'],
-            ))
+            return item
 
-        self.session.execute(batch)
+        elif spider.name in ['link']:
+            batch = self.batch.add(
+                SimpleStatement(
+                    """INSERT INTO imdb_link(imdb_id,title) values (%s,%s)"""),
+                (
+                    item.get('imdb_id'),
+                    item.get('title'),
+                ))
 
-        return item
+            self.session.execute(batch)
 
-class ImdbLinkPipeline(Main):
-    def process_item_imdb_link(self, item, spider):
-        pass
+            return item
+

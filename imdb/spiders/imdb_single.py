@@ -1,13 +1,13 @@
 import re
 import scrapy
 from scrapy.loader import ItemLoader
-from imdb.items.item_imdb import ImdbItem
+from imdb.items import ImdbItem
 
 
 class ImdbSpider(scrapy.Spider):
     name = 'imdb'
     start_urls = [
-        'https://www.imdb.com/title/tt14824590/',
+        'https://www.imdb.com/title/tt1759761/',
     ]
 
     def parse(self, response, **kwargs):
