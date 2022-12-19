@@ -1,7 +1,6 @@
 import scrapy
-import re
-from scrapy.loader import ItemLoader
 from imdb.items import ImdbLinkItem
+from scrapy.loader import ItemLoader
 
 
 class ImdbLinkSpider(scrapy.Spider):
@@ -11,19 +10,10 @@ class ImdbLinkSpider(scrapy.Spider):
         # 'https://www.imdb.com/search/title/?view=simple'
     ]
 
-    @staticmethod
-    def _get_imdb_id(link):
-        result = ''.join(re.findall("(tt\d+)", link))
-        return result
-
     def parse(self, response, **kwargs):
         for item in response.css('span.lister-item-header'):
             loader = ItemLoader(item=ImdbLinkItem(), selector=item)
-
-            # _link = self._get_imdb_id(item.css('a::attr(href)').get())
-
             loader.add_css('title', 'a::text')
-            # loader.add_value('link', _link)
             loader.add_css('link', 'a::attr(href)')
 
             yield loader.load_item()

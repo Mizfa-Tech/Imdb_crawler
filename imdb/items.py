@@ -1,13 +1,9 @@
-# Define here the models for your scraped items
-#
-# See documentation in:
-# https://docs.scrapy.org/en/latest/topics/items.html
 import re
-
 import scrapy
 from itemloaders import processors
 
 
+# ------------------------------------- processors --------------------------------------------------------------------
 def run_time(value: list[str]):
     return ''.join(value)
 
@@ -23,6 +19,7 @@ def get_imdb_id(value):
     return result
 
 
+# ------------------------------------------------ Item ________________________________________________________________
 class ImdbItem(scrapy.Item):
     imdb_id = scrapy.Field(input_processor=processors.MapCompose(validate_data, get_imdb_id),
                            output_processor=processors.TakeFirst())
