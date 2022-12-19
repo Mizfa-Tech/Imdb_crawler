@@ -1,15 +1,14 @@
 import scrapy
 import re
-from w3lib.html import remove_tags
 from scrapy.loader import ItemLoader
-from imdb.items import ImdbItem
+from imdb.items import ImdbLinkItem
 
 
 class ImdbLinkSpider(scrapy.Spider):
     name = 'link'
     start_urls = [
-        # 'https://www.imdb.com/search/title/?view=simple&count=250',
-        'https://www.imdb.com/search/title/?view=simple'
+        'https://www.imdb.com/search/title/?view=simple&count=250',
+        # 'https://www.imdb.com/search/title/?view=simple'
     ]
 
     @staticmethod
@@ -19,9 +18,15 @@ class ImdbLinkSpider(scrapy.Spider):
 
     def parse(self, response, **kwargs):
         for item in response.css('span.lister-item-header'):
-            title = item.css('a::text').get()
-            link = self._get_imdb_id(item.css('a::attr(href)').get())
-            yield {'title': title, 'link': link}
+            loader = ItemLoader(item=ImdbLinkItem(), selector=item)
+
+            # _link = self._get_imdb_id(item.css('a::attr(href)').get())
+
+            loader.add_css('title', 'a::text')
+            # loader.add_value('link', _link)
+            loader.add_css('link', 'a::attr(href)')
+
+            yield loader.load_item()
 
         next_page = response.css('div.desc a.next-page::attr(href)').get()
         if next_page:

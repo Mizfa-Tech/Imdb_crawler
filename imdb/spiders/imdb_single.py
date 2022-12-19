@@ -7,14 +7,13 @@ from imdb.items import ImdbItem
 class ImdbSpider(scrapy.Spider):
     name = 'imdb'
     start_urls = [
-        'https://www.imdb.com/title/tt8064302/',
+        'https://www.imdb.com/title/tt14824590/',
     ]
 
     def parse(self, response, **kwargs):
         loader = ItemLoader(item=ImdbItem(), response=response)
 
-        imdb_id = re.findall("(tt\d+)", response.url)[0]
-        loader.add_value('imdb_id', imdb_id)
+        loader.add_value('imdb_id', response.url)
 
         loader.add_css('title', 'h1[data-testid="hero-title-block__title"]::text')
 
